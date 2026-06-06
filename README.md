@@ -1,66 +1,117 @@
-# LEXA (Legal Explainable AI)
+# LEXA
 
-Multi-agent legal reasoning framework for evidence analysis, adjudication, contradiction detection, and explainable AI.
+LEXA is a capstone-ready courtroom intelligence demo. A user submits a legal case document, and six AI agents analyze evidence, argue prosecution and defense positions, detect contradictions, produce a verdict, and show the full reasoning trace.
+
+The app is intentionally simple: FastAPI backend, React + TypeScript frontend, LangGraph-style workflow, NVIDIA NIM-compatible LLM calls, FAISS-ready retrieval, and Supabase-compatible persistence.
+
+## Architecture
+
+```text
+Browser
+  -> React + TypeScript dashboard
+  -> FastAPI API
+      -> Document processor (PDF/TXT)
+      -> Legal retriever (FAISS chunks or keyword fallback)
+      -> Agent workflow
+          Evidence -> LegalResearch -> Prosecutor -> Defense
+          -> ContradictionDetector -> Judge -> Jury -> AppealCourt
+      -> Supabase tables, or local JSON fallback for development
+```
 
 ## Project Structure
-- `backend/`: FastAPI server with LangGraph/LangChain agents.
-- `frontend/`: React + Vite + TailwindCSS application.
-- `data/`: Local storage for cases, laws, and uploads.
-- `docs/`: Project documentation.
 
-## Ollama Setup (Local LLM)
-This project uses **Ollama** and the `llama3.1:8b` model entirely locally. No OpenAI APIs are used.
-
-1. **Install Ollama**: Follow the instructions at [ollama.com](https://ollama.com/download) for your OS.
-2. **Pull the Model**: Open your terminal and run:
-   ```bash
-   ollama run llama3.1:8b
-   ```
-   *This will download the model. You can exit the Ollama prompt once it finishes.*
-
-## Startup Instructions
-
-### Backend (FastAPI)
-1. Navigate to the `backend` directory:
-   ```bash
-   cd backend
-   ```
-2. Create and activate a virtual environment:
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
-3. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-4. Start the server:
-   ```bash
-   uvicorn main:app --reload --port 8000
-   ```
-   The API will be available at http://localhost:8000. It will automatically check for Ollama on startup.
-
-### Frontend (React/Vite)
-1. Navigate to the `frontend` directory:
-   ```bash
-   cd frontend
-   ```
-2. Load NVM and use Node 26 (if using NVM):
-   ```bash
-   export NVM_DIR="$HOME/.nvm"
-   [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-   nvm use default
-   ```
-3. Start the Vite dev server:
-   ```bash
-   npm run dev
-   ```
-   The app will be available at http://localhost:5173.
-
-## Testing the Model
-You can independently verify that Ollama is connected by using the test endpoint:
-```bash
-curl -X POST http://localhost:8000/api/v1/test-model \
-  -H "Content-Type: application/json" \
-  -d '{"prompt": "What is negligence?"}'
+```text
+backend/
+  api/routes.py
+  agents/
+  graph/
+  processing/
+  retrieval/
+  services/
+frontend/
+  src/components/
+  src/pages/
+  src/lib/
+data/
+  corpus/
+  sample_cases/
+models/
+  faiss_index/
+requirements.txt
+docs_schema.sql
 ```
+
+## Setup
+
+1. Create the Python environment and install backend dependencies.
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+```
+
+2. Install frontend dependencies.
+
+```powershell
+cd frontend
+pnpm install
+```
+
+3. Copy `.env.example` to `.env` and fill service keys when available.
+
+```text
+NIM_API_KEY=...
+SUPABASE_URL=...
+SUPABASE_ANON_KEY=...
+SUPABASE_SERVICE_ROLE_KEY=...
+LEXA_USE_MOCK_LLM=false
+```
+
+For local demos without keys, leave `LEXA_USE_MOCK_LLM=true`. The backend uses deterministic mock agent responses and `data/local_store.json`.
+
+4. Create Supabase tables with `docs_schema.sql` and create a `case-documents` bucket.
+
+5. Start the app.
+
+```powershell
+.\.venv\Scripts\python.exe -m uvicorn main:app --app-dir backend --reload --port 8000
+cd frontend
+pnpm run dev
+```
+
+## Verified Commands
+
+```powershell
+.\.venv\Scripts\python.exe -m pytest backend\tests -q
+cd frontend
+node node_modules\typescript\bin\tsc -b
+node node_modules\vite\bin\vite.js build
+```
+
+## API
+
+- `POST /api/v1/upload` uploads a PDF or TXT file and starts analysis.
+- `POST /api/v1/cases` submits raw case text and starts analysis.
+- `POST /api/v1/analyze/{case_id}` reruns analysis for an existing case.
+- `GET /api/v1/logs/{case_id}` returns live agent trace logs.
+- `GET /api/v1/verdict/{case_id}` returns the verdict payload.
+- `GET /api/v1/cases` returns case history.
+
+## Agent Roles
+
+- Evidence: extracts facts, people, dates, and events.
+- LegalResearch: retrieves relevant Indian law chunks.
+- Prosecutor: builds the strongest case for guilt.
+- Defense: challenges prosecution claims.
+- ContradictionDetector: flags factual conflicts.
+- Judge: weighs both sides and applies cited law.
+- Jury: votes and assigns confidence.
+- AppealCourt: reviews for missed evidence or procedure issues.
+
+## Demo Script
+
+1. Open the dashboard and point out the intake panel, live trace, verdict, and history.
+2. Click `Analyze Text` with the bundled sample case.
+3. Watch all eight workflow steps complete.
+4. Walk through the verdict, confidence, citations, judge reasoning, and appeal review.
+5. Select earlier cases from history to show persistence.

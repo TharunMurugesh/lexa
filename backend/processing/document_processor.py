@@ -1,34 +1,28 @@
-import fitz  # PyMuPDF
-import io
-from processing.text_cleaner import clean_text
+import re
+from pathlib import Path
 
-def process_document(file_content: bytes, filename: str) -> str:
-    """
-    Processes a document (PDF or TXT) and returns extracted text.
-    Handles layout recovery where possible.
-    """
-    if filename.lower().endswith('.txt'):
-        text = file_content.decode('utf-8', errors='ignore')
-        return clean_text(text)
-        
-    if filename.lower().endswith('.pdf'):
-        doc = fitz.open(stream=file_content, filetype="pdf")
-        text_blocks = []
-        
+
+def clean_text(text: str) -> str:
+    text = re.sub(r"\r", "\n", text)
+    text = re.sub(r"[ \t]+", " ", text)
+    text = re.sub(r"\n{3,}", "\n\n", text)
+    return text.strip()
+
+
+def extract_text_from_file(path: str | Path) -> str:
+    path = Path(path)
+    if path.suffix.lower() == ".txt":
+        return clean_text(path.read_text(encoding="utf-8", errors="ignore"))
+    if path.suffix.lower() != ".pdf":
+        raise ValueError("Only PDF and TXT files are supported")
+
+    import fitz
+
+    parts = []
+    with fitz.open(path) as doc:
         for page in doc:
-            # Extract text blocks
-            blocks = page.get_text("blocks")
-            # Sort by vertical (y0) then horizontal (x0) coordinates
-            blocks.sort(key=lambda b: (b[1], b[0]))
-            
-            for b in blocks:
-                # b[4] contains the text string
-                if b[4].strip():
-                    text_blocks.append(b[4].strip())
-                    
-        full_text = "\n\n".join(text_blocks)
-        doc.close()
-        
-        return clean_text(full_text)
-        
-    raise ValueError(f"Unsupported file format for {filename}")
+            parts.append(page.get_text("text"))
+    text = clean_text("\n".join(parts))
+    if not text:
+        raise ValueError("The uploaded document did not contain extractable text")
+    return text
