@@ -17,7 +17,7 @@ async def upload_case_document(file: UploadFile = File(...)):
     """
     Upload a legal document (PDF/TXT) to begin analysis.
     """
-    if not file.filename.lower().endswith(('.pdf', '.txt')):
+    if not file.filename or not file.filename.lower().endswith(('.pdf', '.txt')):
         raise HTTPException(status_code=400, detail="Only PDF and TXT files are supported.")
         
     try:

@@ -4,9 +4,6 @@ from processing.legal_ner import extract_entities
 from processing.temporal_extractor import extract_timeline
 from agents.evidence_agent import run_evidence_extraction
 import os
-import tempfile
-import uuid
-import json
 
 @celery_app.task(bind=True)
 def process_case_document(self, file_path: str, filename: str):

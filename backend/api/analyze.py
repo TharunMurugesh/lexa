@@ -3,11 +3,12 @@ from schemas.case import CaseRequest, CaseResponse
 from workflows.graph import create_case_workflow
 
 router = APIRouter()
-workflow_app = create_case_workflow()
 
 @router.post("/analyze", response_model=CaseResponse)
 async def analyze_case(request: CaseRequest):
     try:
+        workflow_app = create_case_workflow()
+
         # Initialize state with case text
         initial_state = {"case_text": request.case_text}
         

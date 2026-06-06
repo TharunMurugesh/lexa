@@ -52,10 +52,14 @@ app.add_middleware(
 from api.analyze import router as analyze_router
 from api.test_model import router as test_model_router
 from api.routes.cases import router as cases_router
+from api.routes.full_analysis import router as full_analysis_router
+from api.routes.analysis import router as analysis_router
 
 app.include_router(analyze_router, prefix="/api/v1")
 app.include_router(test_model_router, prefix="/api/v1")
 app.include_router(cases_router, prefix="/api/v1")
+app.include_router(full_analysis_router, prefix="/api/v1")
+app.include_router(analysis_router)  # analysis router has its own prefix
 
 @app.get("/health")
 async def health_check():
