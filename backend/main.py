@@ -51,8 +51,11 @@ app.add_middleware(
 
 from api.analyze import router as analyze_router
 from api.test_model import router as test_model_router
+from api.routes.cases import router as cases_router
+
 app.include_router(analyze_router, prefix="/api/v1")
 app.include_router(test_model_router, prefix="/api/v1")
+app.include_router(cases_router, prefix="/api/v1")
 
 @app.get("/health")
 async def health_check():
