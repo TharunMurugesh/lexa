@@ -12,6 +12,7 @@ backend/venv/
 frontend/node_modules/
 frontend/dist/
 .tools/
+.dev-pids
 data/local_store.json
 data/uploads/
 models/faiss_index/*.faiss

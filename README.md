@@ -115,3 +115,7 @@ node node_modules\vite\bin\vite.js build
 3. Watch all eight workflow steps complete.
 4. Walk through the verdict, confidence, citations, judge reasoning, and appeal review.
 5. Select earlier cases from history to show persistence.
+
+## Demo Validation
+
+The five-case validation table is in `demo_results.md`. It includes guilty and insufficient-evidence outcomes to show the jury scorer is not fixed to a single verdict.

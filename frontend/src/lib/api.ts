@@ -12,12 +12,13 @@ export type Verdict = {
   case_id: string
   verdict: string
   confidence: number
+  evidence_summary?: string
   prosecution_args: string
   defense_args: string
   contradictions: unknown[]
   retrieved_laws: Array<{ section: string; text: string; relevance?: number }>
   judge_reasoning: string
-  jury_vote: { confidence?: number; votes?: Record<string, number> }
+  jury_vote: { confidence?: number; votes?: Record<string, number>; verdict?: string }
   appeal_decision: string
 }
 

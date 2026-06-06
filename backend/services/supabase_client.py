@@ -52,12 +52,15 @@ class LocalStore:
         data = self._read()
         verdict_id = str(uuid4())
         jury = state.get("jury_vote", {})
+        evidence = state.get("evidence", {})
+        facts = evidence.get("facts", []) if isinstance(evidence, dict) else []
+        summary = " ".join(str(item) for item in facts[:3]) if facts else "Evidence was extracted from the uploaded case record."
         record = {
             "id": verdict_id,
             "case_id": case_id,
             "verdict": state.get("final_verdict", "Insufficient Evidence"),
             "confidence": jury.get("confidence", 0),
-            "evidence_summary": json.dumps(state.get("evidence", {})),
+            "evidence_summary": summary,
             "prosecution_args": state.get("prosecution", ""),
             "defense_args": state.get("defense", ""),
             "contradictions": state.get("contradictions", []),

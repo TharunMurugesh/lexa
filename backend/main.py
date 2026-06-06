@@ -22,6 +22,7 @@ from api.routes import router
 
 app.include_router(router)
 
+
 @app.get("/health")
 async def health_check():
     return {"status": "ok", "message": "LEXA API is running", "mode": "mock-ready"}

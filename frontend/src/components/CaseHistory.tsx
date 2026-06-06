@@ -18,7 +18,7 @@ export function CaseHistory({ cases, activeCaseId, onSelect }: Props) {
         {cases.map((item) => (
           <button className={item.id === activeCaseId ? 'history-row active' : 'history-row'} key={item.id} onClick={() => onSelect(item.id)}>
             <span>{item.title}</span>
-            <small>{item.verdict?.verdict ?? item.status}</small>
+            <small>{item.verdict?.verdict ?? item.status} - {new Date(item.created_at).toLocaleDateString()}</small>
           </button>
         ))}
       </div>

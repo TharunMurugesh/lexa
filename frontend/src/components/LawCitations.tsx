@@ -3,6 +3,8 @@ type Props = {
 }
 
 export function LawCitations({ laws }: Props) {
+  if (!laws.length) return <p className="muted">No citations returned.</p>
+
   return (
     <div className="citation-list">
       {laws.map((law, index) => (

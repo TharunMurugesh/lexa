@@ -11,6 +11,7 @@ export function Home() {
   const [logs, setLogs] = useState<AgentLog[]>([])
   const [verdict, setVerdict] = useState<Verdict | null>(null)
   const [cases, setCases] = useState<CaseSummary[]>([])
+  const [darkMode, setDarkMode] = useState(() => localStorage.getItem('lexa-theme') === 'dark')
 
   async function refresh(id = caseId) {
     const caseList = await getCases()
@@ -24,6 +25,11 @@ export function Home() {
   useEffect(() => {
     refresh().catch(console.error)
   }, [])
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = darkMode ? 'dark' : 'light'
+    localStorage.setItem('lexa-theme', darkMode ? 'dark' : 'light')
+  }, [darkMode])
 
   useEffect(() => {
     if (!caseId) return
@@ -61,7 +67,10 @@ export function Home() {
           <h1>LEXA</h1>
           <p>Autonomous multi-agent courtroom intelligence for Indian legal case analysis.</p>
         </div>
-        <span className="status-pill">FastAPI + LangGraph + NIM</span>
+        <button className="theme-toggle" type="button" aria-pressed={darkMode} onClick={() => setDarkMode((value) => !value)}>
+          <span>{darkMode ? 'Light' : 'Dark'}</span>
+          <i />
+        </button>
       </header>
       <div className="workspace">
         <aside>
