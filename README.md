@@ -1,6 +1,6 @@
 # LEXA
 
-LEXA is a capstone-ready courtroom intelligence demo. A user submits a legal case document, and six AI agents analyze evidence, argue prosecution and defense positions, detect contradictions, produce a verdict, and show the full reasoning trace.
+LEXA is a courtroom intelligence demo. A user submits a legal case document, and six AI agents analyze evidence, argue prosecution and defense positions, detect contradictions, produce a verdict, and show the full reasoning trace.
 
 The app is intentionally simple: FastAPI backend, React + TypeScript frontend, LangGraph-style workflow, NVIDIA NIM-compatible LLM calls, FAISS-ready retrieval, and Supabase-compatible persistence.
 
